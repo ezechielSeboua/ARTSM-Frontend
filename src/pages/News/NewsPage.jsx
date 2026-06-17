@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Footer from '../../components/Footer';
 import Header from '../../components/Header';
+import Info from '../../components/Info'
 
 const NewsPage = () => {
   // Gestion de l'onglet actif : ALL (Tout), NEWS (Actualités), PRESS (Press Book)

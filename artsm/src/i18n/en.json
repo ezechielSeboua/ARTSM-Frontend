@@ -1,0 +1,53 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "schools": "Our Schools",
+    "courses": "Programs",
+    "news": "News",
+    "library": "Library",
+    "partners": "Partners",
+    "jobs": "Careers",
+    "contact": "Contact",
+    "studentSpace": "Student Space",
+    "register": "Apply Now",
+    "login": "Login",
+    "logout": "Logout"
+  },
+  "hero": {
+    "title": "Building the Future of Science & Technology",
+    "subtitle": "ARTSM trains Africa's next generation of leaders in healthcare, digital technology, and industrial sciences.",
+    "ctaRegister": "Apply Online",
+    "ctaExplore": "Explore Programs"
+  },
+  "stats": {
+    "students": "Active Students",
+    "insertion": "Employment Rate",
+    "partners": "Global Partners",
+    "programs": "Certified Programs"
+  },
+  "newsletter": {
+    "title": "Stay Informed",
+    "subtitle": "Receive our latest news and events directly in your inbox.",
+    "placeholder": "Your email address",
+    "button": "Subscribe",
+    "success": "Thank you! Your subscription has been confirmed."
+  },
+  "footer": {
+    "description": "ARTSM Academy is a center of excellence training tomorrow's leaders and engineers to meet the continent's technological and scientific challenges.",
+    "quickLinks": "Quick Links",
+    "contact": "Contact Us",
+    "rights": "All rights reserved."
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred.",
+    "success": "Success !",
+    "viewMore": "Read More",
+    "back": "Back",
+    "cancel": "Cancel",
+    "save": "Save",
+    "search": "Search...",
+    "all": "All"
+  }
+}

@@ -3,7 +3,7 @@ import useUserManagementStore from '../../../stores/useUserManagementStore';
 import useSchoolStore from '../../../stores/useSchoolStore';
 import { Th, DeleteBtn, SubTabBtn, CountBadge, LoadingSpinner, EmptyState } from './shared';
 
-const EtudiantsTab = () => {
+const EtudiantsTab = ({ canEdit = false }) => {
   const [subTab, setSubTab] = useState('pending');
   const [approvingId, setApprovingId] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
@@ -37,9 +37,6 @@ const EtudiantsTab = () => {
 
   const displayed = subTab === 'pending' ? pending : students;
 
-
-  console.log(displayed);
-  
 
   return (
     <div className="space-y-4">
@@ -102,7 +99,7 @@ const EtudiantsTab = () => {
                               {s.is_active ? 'Actif' : 'En attente'}
                             </span>
                           )}
-                          <DeleteBtn id={s.id} deletingId={deletingId} onDelete={handleDelete} />
+                          {canEdit && <DeleteBtn id={s.id} deletingId={deletingId} onDelete={handleDelete} />}
                         </div>
                       </td>
                     </tr>

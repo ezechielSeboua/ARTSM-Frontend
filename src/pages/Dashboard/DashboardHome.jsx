@@ -100,17 +100,19 @@ const DashboardHome = () => {
             Bonjour, {user ? `${user.first_name} ${user.last_name}` : '—'}
           </h1>
           {user && (
-            <span className={`inline-block mt-3 text-xs font-bold px-3 py-1 rounded-full
-              ${user.role === 'admin' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'}`}>
-              {ROLE_LABELS[user.role] || user.role}
-            </span>
-          )}
-          {user?.must_change_password && (
-            <div className="mt-4 inline-flex items-center gap-2 bg-amber-500/20 border border-amber-400/30 text-amber-300 text-xs font-semibold px-3 py-2 rounded-xl">
-              <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-              </svg>
-              Vous devez changer votre mot de passe temporaire.
+            <div className="mt-3 flex flex-col gap-3">
+              <span className={`inline-block w-fit text-xs font-bold px-3 py-1 rounded-full
+                ${user.role === 'admin' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'}`}>
+                {ROLE_LABELS[user.role] || user.role}
+              </span>
+              {user.must_change_password && (
+                <div className="inline-flex items-center gap-2 bg-amber-500/20 border border-amber-400/30 text-amber-300 text-xs font-semibold px-3 py-2 rounded-xl w-fit">
+                  <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                  Vous devez changer votre mot de passe temporaire.
+                </div>
+              )}
             </div>
           )}
         </div>

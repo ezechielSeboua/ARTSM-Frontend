@@ -147,6 +147,35 @@ const Sidebar = ({ isOpen, toggle }) => {
         })}
       </nav>
 
+      {/* Lien Sécurité — modérateurs uniquement */}
+      {user?.role === 'moderator' && (
+        <div className="px-4 pb-2">
+          <NavLink
+            to="/tableau-de-bord/securite"
+            className={({ isActive }) =>
+              `flex items-center gap-4 px-3 py-3 rounded-xl transition-all duration-200 ${
+                isActive ? 'bg-amber-500 text-blue-950 shadow-lg' : 'text-slate-400 hover:bg-white/5 hover:text-white'
+              }`
+            }
+          >
+            {({ isActive }) => (
+              <>
+                <svg className={`w-6 h-6 shrink-0 ${isActive ? 'text-blue-950' : 'text-amber-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                <AnimatePresence>
+                  {isOpen && (
+                    <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="font-semibold text-sm whitespace-nowrap">
+                      Sécurité
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+              </>
+            )}
+          </NavLink>
+        </div>
+      )}
+
       {/* Footer : infos utilisateur + déconnexion */}
       <div className="p-4 border-t border-white/10 space-y-2 shrink-0">
         {/* Profil utilisateur */}

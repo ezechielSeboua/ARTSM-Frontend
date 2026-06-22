@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import useUserManagementStore from '../../../stores/useUserManagementStore';
 import { Th, DeleteBtn, LoadingSpinner, EmptyState } from './shared';
 
-const ChercheursTabs = () => {
+const ChercheursTabs = ({ canEdit = false }) => {
   const [deletingId, setDeletingId] = useState(null);
   const { byRole, loading, fetchAll, deleteUser } = useUserManagementStore();
   const users = byRole.researcher;
@@ -30,7 +30,7 @@ const ChercheursTabs = () => {
               <Th>Titre</Th>
               <Th>Institution</Th>
               <Th>Pays</Th>
-              <Th>Action</Th>
+              {canEdit && <Th>Action</Th>}
             </tr>
           </thead>
           <tbody>
@@ -43,9 +43,11 @@ const ChercheursTabs = () => {
                   <td className="px-4 py-3 text-slate-500">{p?.academic_title || '—'}</td>
                   <td className="px-4 py-3 text-slate-500">{p?.institution || '—'}</td>
                   <td className="px-4 py-3 text-slate-500">{p?.country || '—'}</td>
-                  <td className="px-4 py-3">
-                    <DeleteBtn id={u.id} deletingId={deletingId} onDelete={handleDelete} />
-                  </td>
+                  {canEdit && (
+                    <td className="px-4 py-3">
+                      <DeleteBtn id={u.id} deletingId={deletingId} onDelete={handleDelete} />
+                    </td>
+                  )}
                 </tr>
               );
             })}

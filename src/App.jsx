@@ -70,6 +70,7 @@ function App() {
           <Route path="formations" element={<FormationsPage />} />
           <Route path="ecoles" element={<EcolesPage />} />
           <Route path="filieres" element={<DomainesPage />} />
+          <Route path="securite" element={<SecuritePage />} />
         </Route>
 
         {/* Espace utilisateur — protégé (tous les rôles authentifiés) */}

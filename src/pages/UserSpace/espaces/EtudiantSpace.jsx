@@ -234,13 +234,13 @@ const EcoleTab = ({ schoolId, onGoToFormations }) => {
 
       {/* Bannière + identité */}
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-        <div className="h-44 bg-gradient-to-br from-blue-950 to-blue-800 relative flex items-end">
+        <div className="h-44 bg-blue-950 relative flex items-end">
           {school.featured_image && (
             <img src={school.featured_image} alt={school.name}
               className="absolute inset-0 w-full h-full object-cover" />
           )}
-          {/* Overlay gradient pour lisibilité du texte */}
-          <div className="absolute inset-0 bg-gradient-to-t from-blue-950/80 via-transparent to-transparent" />
+          {/* Overlay pour lisibilité du texte */}
+          <div className="absolute inset-0 bg-blue-950/60" />
           <div className="relative z-10 px-6 pb-4 w-full">
             <h2 className="text-xl font-black text-white leading-tight">{school.name}</h2>
             {school.accreditation && (
@@ -526,7 +526,7 @@ const EtudiantSpace = () => {
   return (
     <div className="space-y-6">
       {/* Bandeau */}
-      <div className="bg-gradient-to-br from-blue-700 to-blue-950 rounded-3xl px-6 pt-6 pb-0 text-white relative overflow-hidden">
+      <div className="bg-blue-950 rounded-3xl px-6 pt-6 pb-0 text-white relative overflow-hidden">
         <div className="absolute right-0 top-0 w-48 h-48 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/4 pointer-events-none" />
         <div className="relative z-10 mb-4">
           <span className="text-[10px] font-bold uppercase tracking-widest text-blue-300">

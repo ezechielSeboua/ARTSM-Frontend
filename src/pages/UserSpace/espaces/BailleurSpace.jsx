@@ -159,7 +159,7 @@ const BailleurSpace = () => {
 
   return (
     <div className="space-y-6">
-      <div className="bg-gradient-to-br from-purple-700 to-purple-950 rounded-3xl px-6 pt-6 pb-0 text-white relative overflow-hidden">
+      <div className="bg-blue-950 rounded-3xl px-6 pt-6 pb-0 text-white relative overflow-hidden">
         <div className="absolute right-0 top-0 w-48 h-48 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/4 pointer-events-none" />
         <div className="relative z-10 mb-4">
           <span className="text-[10px] font-bold uppercase tracking-widest text-purple-300">Espace Bailleur</span>

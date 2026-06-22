@@ -12,6 +12,7 @@ import ProfileSelectionPage from "./pages/Profil/ProfileSelectionPage";
 import CompanyRegisterForm from "./pages/Auth/Register/CompanyRegisterForm";
 import ProfessionalRegisterForm from "./pages/Auth/Register/ProfessionalRegisterForm";
 import CandidateRegisterForm from "./pages/Auth/Register/CandidateRegisterForm";
+import EleveRegisterForm from "./pages/Auth/Register/EleveRegisterForm";
 import ResearcherRegisterForm from "./pages/Auth/Register/ResearcherRegisterForm";
 import DonorRegisterForm from "./pages/Auth/Register/DonorRegisterForm";
 import LoginPage from "./pages/Auth/LoginPage";
@@ -23,6 +24,7 @@ import FormationsPage from "./pages/Dashboard/FormationsPage";
 import EcolesPage from "./pages/Dashboard/EcolesPage";
 import SchoolDetailPage from "./pages/Schools/SchoolDetailPage";
 import DomainesPage from "./pages/Dashboard/DomainesPage";
+import ConcoursPage from "./pages/Dashboard/ConcoursPage";
 import AdmissionsPage from "./pages/Admissions/AdmissionsPage";
 import ReferencesPage from "./pages/References/ReferencesPage";
 import UserSpaceLayout from "./pages/UserSpace/UserSpaceLayout";
@@ -50,6 +52,7 @@ function App() {
         {/* Authentification */}
         <Route path="/choix-profil" element={<ProfileSelectionPage />} />
         <Route path="/connexion" element={<LoginPage />} />
+        <Route path="/register/eleves" element={<EleveRegisterForm />} />
         <Route path="/register/candidats" element={<CandidateRegisterForm />} />
         <Route path="/register/professionels" element={<ProfessionalRegisterForm />} />
         <Route path="/register/recruteurs" element={<CompanyRegisterForm />} />
@@ -70,6 +73,7 @@ function App() {
           <Route path="formations" element={<FormationsPage />} />
           <Route path="ecoles" element={<EcolesPage />} />
           <Route path="filieres" element={<DomainesPage />} />
+          <Route path="concours" element={<ConcoursPage />} />
           <Route path="securite" element={<SecuritePage />} />
         </Route>
 

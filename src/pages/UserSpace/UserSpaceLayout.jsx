@@ -5,6 +5,7 @@ import useUserStore from '../../stores/useUserStore';
 
 const ROLE_LABELS = {
   student: 'Étudiant',
+  candidate: 'Candidat',
   professional: 'Professionnel',
   recruiter: 'Recruteur / RH',
   researcher: 'Chercheur',
@@ -13,6 +14,7 @@ const ROLE_LABELS = {
 
 const ROLE_COLORS = {
   student: 'bg-blue-100 text-blue-800',
+  candidate: 'bg-amber-100 text-amber-800',
   professional: 'bg-cyan-100 text-cyan-800',
   recruiter: 'bg-slate-200 text-slate-700',
   researcher: 'bg-emerald-100 text-emerald-800',

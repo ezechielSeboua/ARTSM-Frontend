@@ -4,9 +4,11 @@ import ProfessionnelSpace from './espaces/ProfessionnelSpace';
 import RecruteurSpace from './espaces/RecruteurSpace';
 import ChercheurSpace from './espaces/ChercheurSpace';
 import BailleurSpace from './espaces/BailleurSpace';
+import CandidatSpace from './espaces/CandidatSpace';
 
 const SPACES = {
   student: EtudiantSpace,
+  candidate: CandidatSpace,
   professional: ProfessionnelSpace,
   recruiter: RecruteurSpace,
   researcher: ChercheurSpace,

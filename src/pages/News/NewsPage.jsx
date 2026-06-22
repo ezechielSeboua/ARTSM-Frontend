@@ -1,11 +1,15 @@
 import { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import Footer from '../../components/Footer';
 import Header from '../../components/Header';
 import Info from '../../components/Info'
 
+const HASH_TAB_MAP = { '#news': 'NEWS', '#revue': 'PRESS', '#evenements': 'ALL', '#newsletter': 'ALL' };
+
 const NewsPage = () => {
-  // Gestion de l'onglet actif : ALL (Tout), NEWS (Actualités), PRESS (Press Book)
-  const [activeTab, setActiveTab] = useState('ALL');
+  const { hash } = useLocation();
+  const [activeTab, setActiveTab] = useState(() => HASH_TAB_MAP[hash] || 'ALL');
+
 
   // Données fictives mais contextualisées (Actualités & Press Book)
   const newsItems = [
@@ -196,6 +200,73 @@ const NewsPage = () => {
         </div>
 
       </main>
+
+      {/* ================= ÉVÉNEMENTS À VENIR ================= */}
+      <section id="evenements" className="bg-white border-t border-slate-100 py-16 lg:py-20 scroll-mt-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-2xl mx-auto mb-12">
+            <span className="text-xs font-bold uppercase tracking-widest text-amber-600 bg-amber-50 border border-amber-200 px-3 py-1 rounded-full">Agenda</span>
+            <h2 className="text-2xl sm:text-3xl font-black text-blue-950 mt-4">Événements à venir</h2>
+            <p className="text-slate-500 mt-3 text-sm leading-relaxed">Conférences, remises de diplômes, journées portes ouvertes et concours — restez informé.</p>
+          </div>
+
+          <div className="space-y-4 max-w-3xl mx-auto">
+            {[
+              { date: { jour: '15', mois: 'Juil', annee: '2026' }, titre: 'Cérémonie de remise des diplômes — Promotion 2026', lieu: 'Campus ARSTM, Abidjan', type: 'Cérémonie', desc: 'Remise officielle des diplômes aux lauréats de l\'ESN, ESTM et CEAM. Ouvert aux familles sur invitation.' },
+              { date: { jour: '03', mois: 'Sep', annee: '2026' }, titre: 'Journée Portes Ouvertes 2026-2027', lieu: 'Campus ARSTM, Abidjan', type: 'Journée découverte', desc: 'Découvrez nos formations, simulateurs et rencontrez nos équipes pédagogiques. Entrée libre de 9h à 17h.' },
+              { date: { jour: '10', mois: 'Sep', annee: '2026' }, titre: 'Concours d\'entrée — Session 1 (ESN / ESTM)', lieu: 'Campus ARSTM, Abidjan', type: 'Concours', desc: 'Dépôt des dossiers jusqu\'au 31 Août 2026. Épreuves écrites le matin, oraux le lendemain.' },
+              { date: { jour: '08', mois: 'Oct', annee: '2026' }, titre: 'Conférence Internationale — Sécurité Maritime en Golfe de Guinée', lieu: 'Hôtel Sofitel Abidjan', type: 'Conférence', desc: 'Organisée par l\'ARSTM et l\'OMAOC. Experts maritimes africains et internationaux. Inscription obligatoire.' },
+            ].map((evt, i) => (
+              <div key={i} className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col sm:flex-row hover:shadow-md transition-shadow">
+                <div className="bg-blue-950 text-white flex flex-col items-center justify-center px-6 py-4 sm:py-0 sm:w-24 shrink-0 text-center">
+                  <span className="text-2xl font-black leading-none">{evt.date.jour}</span>
+                  <span className="text-xs font-bold text-amber-400 uppercase mt-0.5">{evt.date.mois}</span>
+                  <span className="text-xs text-blue-300 font-medium">{evt.date.annee}</span>
+                </div>
+                <div className="p-5 flex-1 flex flex-col justify-between gap-2">
+                  <div>
+                    <div className="flex items-center gap-2 flex-wrap mb-1">
+                      <span className="text-xs font-bold text-blue-700 bg-blue-50 border border-blue-100 px-2 py-0.5 rounded-lg">{evt.type}</span>
+                      <span className="text-xs text-slate-400 font-medium">{evt.lieu}</span>
+                    </div>
+                    <h3 className="font-black text-blue-950 text-sm">{evt.titre}</h3>
+                    <p className="text-xs text-slate-500 mt-1 leading-relaxed">{evt.desc}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ================= NEWSLETTER ================= */}
+      <section id="newsletter" className="bg-blue-950 py-16 scroll-mt-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-2xl mx-auto text-center">
+            <span className="text-xs font-bold uppercase tracking-widest text-amber-400 bg-amber-400/10 border border-amber-400/20 px-3 py-1 rounded-full inline-block mb-4">Newsletter ARSTM</span>
+            <h2 className="text-2xl sm:text-3xl font-black text-white mt-2 mb-4">Restez informé de l'actualité maritime</h2>
+            <p className="text-blue-200 text-sm leading-relaxed mb-8">Recevez chaque mois nos actualités, les dates des concours, les événements à venir et les opportunités d'emploi pour les professionnels de la mer.</p>
+            <form
+              onSubmit={(e) => e.preventDefault()}
+              className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto"
+            >
+              <input
+                type="email"
+                placeholder="votre@email.com"
+                className="flex-1 px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-blue-300 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                required
+              />
+              <button
+                type="submit"
+                className="px-6 py-3 bg-amber-500 hover:bg-amber-400 text-blue-950 font-bold rounded-xl transition-colors text-sm whitespace-nowrap"
+              >
+                S'abonner
+              </button>
+            </form>
+            <p className="text-xs text-blue-400 mt-3">Pas de spam — désinscription en un clic.</p>
+          </div>
+        </div>
+      </section>
 
       <Footer />
     </div>

@@ -99,7 +99,7 @@ const InstitutionsPage = () => {
       </section>
 
       {/* ================= SECTION : MOT DU DG & PRÉSENTATION ================= */}
-      <section className="py-16 lg:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="mot-dg" className="py-16 lg:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
           {/* Bloc Mot du DG (À gauche) */}
           <div className="lg:col-span-5 bg-gradient-to-b from-blue-50/80 to-white border border-blue-100 rounded-3xl p-8 lg:p-10 shadow-sm relative">
@@ -133,7 +133,7 @@ const InstitutionsPage = () => {
           </div>
 
           {/* Bloc Présentation Générale (À droite) */}
-          <div className="lg:col-span-7 flex flex-col space-y-6">
+          <div id="presentation" className="lg:col-span-7 flex flex-col space-y-6">
             <h2 className="text-3xl font-black text-blue-950 tracking-tight">
               Présentation Institutionnelle
             </h2>
@@ -178,7 +178,7 @@ const InstitutionsPage = () => {
       </section>
 
       {/* ================= SECTION : FILM INSTITUTIONNEL & INFRASTRUCTURES ================= */}
-      <section className="bg-gray-50 py-16 lg:py-24">
+      <section id="film" className="bg-gray-50 py-16 lg:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <span className="text-xs font-bold uppercase tracking-widest text-amber-600">
@@ -327,7 +327,7 @@ const InstitutionsPage = () => {
       </section>
 
       {/* ================= SECTION : SERVICES & SITUATION ================= */}
-      <section className="py-12 lg:py-24 max-w-7xl mx-auto px-4 sm:px-6">
+      <section id="localisation" className="py-12 lg:py-24 max-w-7xl mx-auto px-4 sm:px-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="bg-gradient-to-br from-blue-900 to-blue-950 text-white rounded-3xl p-8 shadow-lg">
             <span className="text-[10px] font-bold text-amber-400 uppercase tracking-widest block mb-2">
@@ -381,6 +381,82 @@ const InstitutionsPage = () => {
                 />
               </svg>
             </a>
+          </div>
+        </div>
+      </section>
+
+      {/* ================= SECTION : ORGANIGRAMME ================= */}
+      <section id="organigramme" className="bg-slate-50 py-12 lg:py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-10">
+            <span className="text-xs font-bold uppercase tracking-widest text-amber-600">Gouvernance</span>
+            <h2 className="text-2xl font-black text-blue-950 mt-2">Organigramme</h2>
+            <p className="text-slate-500 text-sm mt-3 max-w-xl mx-auto">La structure administrative garantissant la fluidité académique et la conformité avec les directives des États membres.</p>
+          </div>
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-10 text-center">
+            <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-blue-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+              </svg>
+            </div>
+            <p className="text-slate-500 text-sm">L'organigramme officiel est disponible sur demande auprès de la Direction Générale.</p>
+            <a href="mailto:dg@arstm.net" className="mt-4 inline-flex items-center gap-2 text-sm font-bold text-blue-900 hover:underline">
+              Contacter la Direction Générale →
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* ================= SECTION : POLITIQUE QUALITÉ ================= */}
+      <section id="qualite" className="py-12 lg:py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-gradient-to-br from-blue-950 to-blue-900 rounded-3xl p-8 lg:p-12 text-white">
+            <div className="flex items-start gap-6">
+              <div className="p-4 bg-white/10 rounded-2xl shrink-0">
+                <svg className="w-8 h-8 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+              </div>
+              <div>
+                <h2 className="text-2xl font-black mb-3">Politique Qualité</h2>
+                <p className="text-blue-100 leading-relaxed max-w-2xl">L'ARSTM est certifiée ISO 9001 version 2015. Notre système de management de la qualité garantit l'excellence des formations dispensées, la satisfaction des parties prenantes et l'amélioration continue de nos processus pédagogiques et administratifs.</p>
+                <div className="mt-6 flex flex-wrap gap-3">
+                  {['ISO 9001:2015', 'Certification STCW', 'Homologation MESRS', 'Accréditation OMI'].map(c => (
+                    <span key={c} className="text-xs font-bold px-3 py-1.5 bg-white/10 border border-white/20 rounded-lg">{c}</span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ================= SECTION : CONTACTS ================= */}
+      <section id="contacts" className="bg-slate-50 py-12 lg:py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-10">
+            <span className="text-xs font-bold uppercase tracking-widest text-amber-600">Nous contacter</span>
+            <h2 className="text-2xl font-black text-blue-950 mt-2">Contacts</h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              { label: 'Direction Générale', email: 'dg@arstm.net', phone: '+225 27 21 35 42 00', icon: 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4' },
+              { label: 'Scolarité & Inscriptions', email: 'scolarite@arstm.net', phone: '+225 27 21 35 42 01', icon: 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253' },
+              { label: 'Communication', email: 'cocha@arstm.net', phone: '+225 01 02 02 59 05', icon: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' },
+            ].map((c) => (
+              <div key={c.label} className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
+                <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center">
+                  <svg className="w-5 h-5 text-blue-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={c.icon} />
+                  </svg>
+                </div>
+                <div>
+                  <p className="font-black text-blue-950 text-sm">{c.label}</p>
+                  <a href={`mailto:${c.email}`} className="text-xs text-blue-700 font-medium hover:underline block mt-1">{c.email}</a>
+                  <p className="text-xs text-slate-500 mt-0.5">{c.phone}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>

@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import Footer from "../../components/Footer";
 import Header from "../../components/Header";
 
@@ -37,7 +38,7 @@ const TrainingPage = () => {
         "https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?q=80&w=800&auto=format&fit=crop",
     },
     {
-      id: "nav-ind",
+      id: "navigation",
       title: "Navigation et Industries",
       subtitle: "Savoir-faire Maritime & Expertise Technique",
       badge: "Double Compétence",
@@ -112,7 +113,17 @@ const TrainingPage = () => {
     },
   ];
 
-  const [selectedTrack, setSelectedTrack] = useState(trainingTracks[0]);
+  const { hash } = useLocation();
+  const [selectedTrack, setSelectedTrack] = useState(() => {
+    const h = hash.replace('#', '');
+    return trainingTracks.find((t) => t.id === h) || trainingTracks[0];
+  });
+
+  useEffect(() => {
+    const h = hash.replace('#', '');
+    const found = trainingTracks.find((t) => t.id === h);
+    if (found) setSelectedTrack(found);
+  }, [hash]);
 
   return (
     <div className="bg-slate-50 min-h-screen">
@@ -267,18 +278,61 @@ const TrainingPage = () => {
 
             <div className="flex-shrink-0 w-full lg:w-auto flex flex-col sm:flex-row gap-4 justify-center">
               <a
-                href="/demande-catalogue"
+                href="#catalogue"
                 className="px-6 py-3.5 bg-amber-500 hover:bg-amber-400 text-blue-950 rounded-xl text-sm font-bold text-center shadow-lg transition-all active:scale-98"
               >
                 Demander le Catalogue 2026
               </a>
               <a
-                href="/contact-entreprises"
+                href="/institution#contacts"
                 className="px-6 py-3.5 bg-white/10 hover:bg-white/10 text-white rounded-xl text-sm font-bold text-center border border-white/20 transition-all"
               >
                 Contacter un conseiller
               </a>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ================= SECTION CATALOGUE ================= */}
+      <section id="catalogue" className="py-16 lg:py-24 scroll-mt-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-2xl mx-auto mb-12">
+            <span className="text-xs font-bold uppercase tracking-widest text-amber-600 bg-amber-50 border border-amber-200 px-3 py-1 rounded-full">Catalogue 2026</span>
+            <h2 className="text-2xl sm:text-3xl font-black text-blue-950 mt-4">Télécharger le catalogue de formation</h2>
+            <p className="text-slate-500 mt-3 text-sm leading-relaxed">Retrouvez l'ensemble des modules, certifications et formations continues proposés par l'ARSTM dans notre catalogue annuel.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-10">
+            {[
+              { title: 'Catalogue général', desc: 'Toutes les formations continues — STCW, Navigation, Industries.', pages: '48 pages', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
+              { title: 'STCW & Sûreté maritime', desc: 'Certifications réglementaires OMI — calendriers et tarifs.', pages: '16 pages', icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z' },
+              { title: 'Solutions entreprises', desc: 'Formations intra-entreprise — modalités et devis personnalisé.', pages: '12 pages', icon: 'M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' },
+            ].map((cat) => (
+              <div key={cat.title} className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 text-center hover:shadow-md transition-shadow">
+                <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-6 h-6 text-blue-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={cat.icon} />
+                  </svg>
+                </div>
+                <h3 className="font-black text-blue-950 text-sm mb-2">{cat.title}</h3>
+                <p className="text-xs text-slate-500 leading-relaxed mb-3">{cat.desc}</p>
+                <span className="text-xs font-bold text-slate-400">{cat.pages}</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="text-center">
+            <a
+              href="mailto:formation-continue@arstm.net?subject=Demande de catalogue 2026"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-blue-950 hover:bg-blue-900 text-white font-bold rounded-xl transition-colors text-sm shadow-lg"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              Recevoir le catalogue par e-mail
+            </a>
+            <p className="text-xs text-slate-400 mt-3">Envoi gratuit sous 24h ouvrées</p>
           </div>
         </div>
       </section>

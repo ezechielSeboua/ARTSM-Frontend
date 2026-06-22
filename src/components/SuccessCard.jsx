@@ -46,7 +46,7 @@ const SuccessCard = ({
               </svg>
             </div>
             <div className="text-left overflow-hidden flex-1">
-              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Notification envoyée à</p>
+              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">La Notification sera envoyée à</p>
               <p className="text-sm font-bold text-blue-950 truncate">{email}</p>
             </div>
           </div>

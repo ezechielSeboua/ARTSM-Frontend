@@ -4,21 +4,20 @@ import SuccessCard from '../../../components/SuccessCard';
 import Logo from '../../../components/Logo';
 import useUserStore from '../../../stores/useUserStore';
 
-const SECTORS = [
-  { value: 'maritime', label: 'Armement Maritime' },
-  { value: 'port', label: 'Portuaire & Logistique' },
-  { value: 'offshore', label: 'Industrie Offshore' },
-  { value: 'security', label: 'Sécurité Maritime' },
-  { value: 'fishing', label: 'Pêche & Aquaculture' },
+const ORG_TYPES = [
+  { value: 'ministry', label: 'Ministère / Institution Gouvernementale' },
+  { value: 'multilateral', label: 'Organisation Multilatérale (ONU, OMI…)' },
+  { value: 'ngo', label: 'ONG / Association' },
+  { value: 'private', label: 'Fondation / Secteur Privé' },
   { value: 'other', label: 'Autre' },
 ];
 
 const inputCls = "w-full rounded-2xl bg-slate-50 border border-slate-200 px-3 sm:px-4 py-2.5 sm:py-3 text-sm focus:bg-white focus:ring-2 focus:ring-blue-900/20 focus:border-blue-900 transition-all outline-none";
 
-const CompanyRegisterForm = () => {
+const DonorRegisterForm = () => {
   const [formData, setFormData] = useState({
     first_name: '', last_name: '', email: '', phone: '',
-    company_name: '', job_title: '', sector: '', country: '', company_website: '',
+    organization_name: '', position: '', organization_type: '', country: '',
   });
   const [submitted, setSubmitted] = useState(false);
   const { register, loading, error, clearError } = useUserStore();
@@ -34,14 +33,13 @@ const CompanyRegisterForm = () => {
       email: formData.email,
       first_name: formData.first_name,
       last_name: formData.last_name,
-      role: 'recruiter',
+      role: 'donor',
       phone: formData.phone,
       profile: {
-        company_name: formData.company_name,
-        job_title: formData.job_title,
-        sector: formData.sector,
+        organization_name: formData.organization_name,
+        position: formData.position,
+        organization_type: formData.organization_type,
         country: formData.country,
-        ...(formData.company_website && { company_website: formData.company_website }),
       },
     };
     const ok = await register(payload);
@@ -56,8 +54,8 @@ const CompanyRegisterForm = () => {
     return (
       <SuccessCard
         email={formData.email}
-        title="Compte Recruteur créé !"
-        message="Un mot de passe temporaire vous a été envoyé par email. Connectez-vous pour accéder à votre espace partenaire RH et publier vos offres."
+        title="Compte Partenaire créé !"
+        message="Un mot de passe temporaire vous a été envoyé par email. Connectez-vous pour accéder à votre espace institutionnel."
         primaryActionLabel="Se connecter"
         onPrimaryAction={() => window.location.href = '/connexion'}
       />
@@ -77,7 +75,7 @@ const CompanyRegisterForm = () => {
       </nav>
 
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute -right-40 top-0 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl" />
+        <div className="absolute right-0 top-0 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl" />
       </div>
 
       <div className="w-full sm:max-w-2xl bg-white sm:rounded-3xl border-0 sm:border border-slate-200/60 shadow-2xl shadow-slate-200/50 overflow-hidden relative z-10 mt-0 sm:mt-16 rounded-none">
@@ -89,9 +87,9 @@ const CompanyRegisterForm = () => {
               </div>
               <div>
                 <span className="text-amber-400 font-bold uppercase tracking-widest text-[9px] sm:text-[10px] bg-white/10 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full inline-block mb-1.5 sm:mb-3">
-                  Espace Recruteur / RH
+                  Partenaire Institutionnel
                 </span>
-                <h1 className="text-lg sm:text-3xl font-black tracking-tight">Inscription Recruteur</h1>
+                <h1 className="text-lg sm:text-3xl font-black tracking-tight">Inscription Bailleur</h1>
               </div>
             </div>
             <Link to="/choix-profil" className="p-2 sm:p-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all text-slate-300 hover:text-white flex-shrink-0" aria-label="Retour">
@@ -112,20 +110,20 @@ const CompanyRegisterForm = () => {
           <div className="space-y-3 sm:space-y-6">
             <div className="flex items-center gap-2">
               <span className="flex-shrink-0 w-6 h-6 rounded-full bg-amber-100 text-amber-700 text-xs font-black flex items-center justify-center">1</span>
-              <h3 className="text-[11px] sm:text-xs font-bold text-slate-400 uppercase tracking-widest">Responsable RH / Recrutement</h3>
+              <h3 className="text-[11px] sm:text-xs font-bold text-slate-400 uppercase tracking-widest">Représentant / Contact</h3>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
               <div>
                 <label className="block text-[11px] sm:text-xs font-semibold text-slate-600 mb-1 sm:mb-1.5 uppercase tracking-wide">Nom *</label>
-                <input required type="text" name="last_name" onChange={handleChange} className={inputCls} placeholder="Ex : MENSAH" />
+                <input required type="text" name="last_name" onChange={handleChange} className={inputCls} placeholder="Ex : COULIBALY" />
               </div>
               <div>
                 <label className="block text-[11px] sm:text-xs font-semibold text-slate-600 mb-1 sm:mb-1.5 uppercase tracking-wide">Prénom(s) *</label>
-                <input required type="text" name="first_name" onChange={handleChange} className={inputCls} placeholder="Ex : Estelle" />
+                <input required type="text" name="first_name" onChange={handleChange} className={inputCls} placeholder="Ex : Ibrahim" />
               </div>
               <div>
-                <label className="block text-[11px] sm:text-xs font-semibold text-slate-600 mb-1 sm:mb-1.5 uppercase tracking-wide">Email professionnel *</label>
-                <input required type="email" name="email" onChange={handleChange} className={inputCls} placeholder="rh@entreprise.ci" />
+                <label className="block text-[11px] sm:text-xs font-semibold text-slate-600 mb-1 sm:mb-1.5 uppercase tracking-wide">Email institutionnel *</label>
+                <input required type="email" name="email" onChange={handleChange} className={inputCls} placeholder="contact@organisation.int" />
               </div>
               <div>
                 <label className="block text-[11px] sm:text-xs font-semibold text-slate-600 mb-1 sm:mb-1.5 uppercase tracking-wide">Téléphone *</label>
@@ -137,31 +135,27 @@ const CompanyRegisterForm = () => {
           <div className="space-y-3 sm:space-y-6">
             <div className="flex items-center gap-2">
               <span className="flex-shrink-0 w-6 h-6 rounded-full bg-amber-100 text-amber-700 text-xs font-black flex items-center justify-center">2</span>
-              <h3 className="text-[11px] sm:text-xs font-bold text-slate-400 uppercase tracking-widest">Informations Entreprise</h3>
+              <h3 className="text-[11px] sm:text-xs font-bold text-slate-400 uppercase tracking-widest">Organisation</h3>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
-              <div>
-                <label className="block text-[11px] sm:text-xs font-semibold text-slate-600 mb-1 sm:mb-1.5 uppercase tracking-wide">Raison sociale *</label>
-                <input required type="text" name="company_name" onChange={handleChange} className={inputCls} placeholder="Ex : Port Autonome d'Abidjan" />
+              <div className="sm:col-span-2">
+                <label className="block text-[11px] sm:text-xs font-semibold text-slate-600 mb-1 sm:mb-1.5 uppercase tracking-wide">Nom de l'organisation *</label>
+                <input required type="text" name="organization_name" onChange={handleChange} className={inputCls} placeholder="Ex : Commission de la CEDEAO" />
               </div>
               <div>
                 <label className="block text-[11px] sm:text-xs font-semibold text-slate-600 mb-1 sm:mb-1.5 uppercase tracking-wide">Poste / Fonction *</label>
-                <input required type="text" name="job_title" onChange={handleChange} className={inputCls} placeholder="Ex : Responsable RH" />
+                <input required type="text" name="position" onChange={handleChange} className={inputCls} placeholder="Ex : Directeur des Transports" />
               </div>
               <div>
-                <label className="block text-[11px] sm:text-xs font-semibold text-slate-600 mb-1 sm:mb-1.5 uppercase tracking-wide">Secteur *</label>
-                <select required name="sector" onChange={handleChange} className={inputCls}>
+                <label className="block text-[11px] sm:text-xs font-semibold text-slate-600 mb-1 sm:mb-1.5 uppercase tracking-wide">Type d'organisation *</label>
+                <select required name="organization_type" onChange={handleChange} className={inputCls}>
                   <option value="">Sélectionnez...</option>
-                  {SECTORS.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
+                  {ORG_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
                 </select>
               </div>
-              <div>
+              <div className="sm:col-span-2">
                 <label className="block text-[11px] sm:text-xs font-semibold text-slate-600 mb-1 sm:mb-1.5 uppercase tracking-wide">Pays *</label>
                 <input required type="text" name="country" onChange={handleChange} className={inputCls} placeholder="Ex : Côte d'Ivoire" />
-              </div>
-              <div className="sm:col-span-2">
-                <label className="block text-[11px] sm:text-xs font-semibold text-slate-600 mb-1 sm:mb-1.5 uppercase tracking-wide">Site web entreprise (optionnel)</label>
-                <input type="url" name="company_website" onChange={handleChange} className={inputCls} placeholder="https://..." />
               </div>
             </div>
           </div>
@@ -171,7 +165,7 @@ const CompanyRegisterForm = () => {
             {loading ? (
               <span className="w-5 h-5 border-2 border-blue-950/30 border-t-blue-950 rounded-full animate-spin" />
             ) : (
-              <><span>Créer mon compte recruteur</span><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg></>
+              <><span>Créer mon compte</span><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg></>
             )}
           </button>
 
@@ -185,4 +179,4 @@ const CompanyRegisterForm = () => {
   );
 };
 
-export default CompanyRegisterForm;
+export default DonorRegisterForm;

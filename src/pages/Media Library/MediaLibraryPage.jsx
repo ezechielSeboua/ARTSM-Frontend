@@ -1,9 +1,12 @@
 import { useState } from "react";
+import { useLocation } from "react-router-dom";
 import Footer from "../../components/Footer";
 import Header from "../../components/Header";
 
 const MediaLibraryPage = () => {
-  const [activeTab, setActiveTab] = useState("PHOTOS");
+  const { hash } = useLocation();
+  const HASH_TAB_MAP = { '#photos': 'PHOTOS', '#videos': 'VIDEOS', '#documents': 'DOCUMENTS' };
+  const [activeTab, setActiveTab] = useState(() => HASH_TAB_MAP[hash] || 'PHOTOS');
   // Transition fluide entre les onglets
   const [fade, setFade] = useState(false);
 

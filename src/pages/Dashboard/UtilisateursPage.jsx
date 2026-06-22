@@ -25,7 +25,7 @@ const ROLE_TABS = [
   { key: 'recruiter',    label: 'Recruteurs',      component: RecruteursTab,     adminOnly: false },
   { key: 'researcher',   label: 'Chercheurs',      component: ChercheursTabs,    adminOnly: false },
   { key: 'donor',        label: 'Bailleurs',       component: BailleursTab,      adminOnly: false },
-  { key: 'agents',       label: 'Agents ARSTM',    component: AgentsTab,         adminOnly: true  },
+  { key: 'agents',       label: 'Agents ARSTM',    component: AgentsTab,         adminOnly: false },
 ];
 
 // ─── Vue propre à l'utilisateur connecté ─────────────────────────────────────
@@ -70,7 +70,7 @@ const UtilisateursPage = () => {
   const isSuperAdmin = user?.role === 'admin';
   const [activeTab, setActiveTab] = useState('student');
 
-  const visibleTabs = ROLE_TABS.filter(t => !t.adminOnly || isSuperAdmin);
+  const visibleTabs = ROLE_TABS.filter(t => !t.adminOnly);
   const ActiveComponent = visibleTabs.find(t => t.key === activeTab)?.component;
 
   return (
@@ -105,7 +105,7 @@ const UtilisateursPage = () => {
           </div>
 
           {/* Contenu du tab actif */}
-          {ActiveComponent && <ActiveComponent />}
+          {ActiveComponent && <ActiveComponent canEdit={isSuperAdmin} />}
         </>
       ) : (
         <SelfView user={user} />

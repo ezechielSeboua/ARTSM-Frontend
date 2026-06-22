@@ -16,7 +16,7 @@ const ROLE_BADGE = {
   moderator: "bg-amber-50 text-amber-700",
 };
 
-const AgentsTab = () => {
+const AgentsTab = ({ canEdit = false }) => {
   const [deletingId, setDeletingId] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
@@ -34,36 +34,33 @@ const AgentsTab = () => {
     setDeletingId(null);
   };
 
-  console.log(agents);
-  // console.log(byRole);
-
-const myAgents = agents.filter((agent) => agent.email !== "aka.konin@gmail.com");
-
-  console.log("Mes agents :", myAgents);
+  const myAgents = agents.filter((agent) => agent.email !== "aka.konin@gmail.com");
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-end">
-        <button
-          onClick={() => setShowModal(true)}
-          className="flex items-center gap-2 px-4 py-2.5 bg-blue-950 text-white text-sm font-bold rounded-xl hover:bg-blue-900 transition-colors"
-        >
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+      {canEdit && (
+        <div className="flex justify-end">
+          <button
+            onClick={() => setShowModal(true)}
+            className="flex items-center gap-2 px-4 py-2.5 bg-blue-950 text-white text-sm font-bold rounded-xl hover:bg-blue-900 transition-colors"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2.5"
-              d="M12 4v16m8-8H4"
-            />
-          </svg>
-          Nouvel agent
-        </button>
-      </div>
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2.5"
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
+            Nouvel agent
+          </button>
+        </div>
+      )}
 
       {loading ? (
         <LoadingSpinner />
@@ -82,7 +79,7 @@ const myAgents = agents.filter((agent) => agent.email !== "aka.konin@gmail.com")
                   <Th>Département</Th>
                   <Th>Rôle</Th>
                   <Th>Depuis</Th>
-                  <Th>Action</Th>
+                  {canEdit && <Th>Action</Th>}
                 </tr>
               </thead>
               <tbody>
@@ -126,13 +123,15 @@ const myAgents = agents.filter((agent) => agent.email !== "aka.konin@gmail.com")
                           ? new Date(u.date_joined).toLocaleDateString("fr-FR")
                           : "—"}
                       </td>
-                      <td className="px-4 py-3">
-                        <DeleteBtn
-                          id={u.id}
-                          deletingId={deletingId}
-                          onDelete={() => handleDelete(u.id, u.role)}
-                        />
-                      </td>
+                      {canEdit && (
+                        <td className="px-4 py-3">
+                          <DeleteBtn
+                            id={u.id}
+                            deletingId={deletingId}
+                            onDelete={() => handleDelete(u.id, u.role)}
+                          />
+                        </td>
+                      )}
                     </tr>
                   );
                 })}
@@ -142,7 +141,7 @@ const myAgents = agents.filter((agent) => agent.email !== "aka.konin@gmail.com")
         </div>
       )}
 
-      {showModal && <AgentModal onClose={() => setShowModal(false)} />}
+      {canEdit && showModal && <AgentModal onClose={() => setShowModal(false)} />}
     </div>
   );
 };

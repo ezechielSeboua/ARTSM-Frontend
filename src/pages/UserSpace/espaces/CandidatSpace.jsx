@@ -1,46 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import useUserStore from '../../../stores/useUserStore';
 import { SuccessBanner, ErrorBanner, CommonFields, SaveBtn } from './shared';
-
-// ─── Données fictives (à remplacer par les appels API) ────────────────────────
-
-const MOCK_COMPETITIONS = [
-  {
-    slug: 'concours-entree-arstm-2026',
-    title: "Concours d'entrée ARSTM 2026",
-    description: "Concours d'admission aux formations initiales de l'ARSTM pour l'année académique 2026-2027. Ouvert aux bacheliers des séries scientifiques.",
-    application_deadline: '2026-08-31',
-    competition_date: '2026-09-15',
-  },
-  {
-    slug: 'concours-master-navigation-2026',
-    title: 'Concours Master Navigation Maritime 2026',
-    description: "Concours d'entrée en Master 1 de Navigation Maritime. Réservé aux titulaires d'une Licence en sciences nautiques ou équivalent.",
-    application_deadline: '2026-07-15',
-    competition_date: '2026-08-20',
-  },
-];
-
-const MOCK_CANDIDATURES = [
-  {
-    id: 1,
-    competition_title: "Concours d'entrée ARSTM 2025",
-    program_label: 'Licence Navigation Maritime — ESN',
-    academic_level: 'Baccalauréat',
-    submitted_at: '2025-06-10',
-    status: 'converted',
-  },
-  {
-    id: 2,
-    competition_title: "Concours d'entrée ARSTM 2024",
-    program_label: 'Licence Navigation Maritime — ESN',
-    academic_level: 'Baccalauréat',
-    submitted_at: '2024-05-22',
-    status: 'closed',
-  },
-];
-
-const MOCK_ALERT_SUBSCRIBED = true;
+import { fetchMyCompetitions } from '../../../api/competitions';
+import { fetchMyAdmissions, submitAdmission } from '../../../api/admissions';
+import { getAlertStatus, subscribeToAlerts, unsubscribeFromAlerts } from '../../../api/alerts';
 
 // ─── Constantes ───────────────────────────────────────────────────────────────
 
@@ -71,12 +34,10 @@ const daysUntil = (iso) => {
 
 // ─── Onglet Accueil ───────────────────────────────────────────────────────────
 
-const AccueilTab = ({ onNavigate }) => {
-  const { user } = useUserStore();
-
-  const nextCompetition = MOCK_COMPETITIONS[0];
+const AccueilTab = ({ onNavigate, competitions, admissions, subscribed }) => {
+  const nextCompetition = competitions[0] ?? null;
   const daysLeft = daysUntil(nextCompetition?.application_deadline);
-  const lastCandidature = MOCK_CANDIDATURES[0];
+  const lastCandidature = admissions[0] ?? null;
   const lastStatus = STATUS_CONFIG[lastCandidature?.status];
 
   return (
@@ -113,16 +74,16 @@ const AccueilTab = ({ onNavigate }) => {
       {/* Résumé KPIs */}
       <div className="grid grid-cols-3 gap-3">
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 text-center">
-          <p className="text-2xl font-black text-blue-950">{MOCK_COMPETITIONS.length}</p>
+          <p className="text-2xl font-black text-blue-950">{competitions.length}</p>
           <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mt-1">Concours ouverts</p>
         </div>
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 text-center">
-          <p className="text-2xl font-black text-blue-950">{MOCK_CANDIDATURES.length}</p>
+          <p className="text-2xl font-black text-blue-950">{admissions.length}</p>
           <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mt-1">Candidatures</p>
         </div>
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 text-center">
           <p className="text-2xl font-black text-emerald-600">
-            {MOCK_ALERT_SUBSCRIBED ? '✓' : '—'}
+            {subscribed ? '✓' : '—'}
           </p>
           <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mt-1">Alertes actives</p>
         </div>
@@ -157,20 +118,204 @@ const AccueilTab = ({ onNavigate }) => {
   );
 };
 
+// ─── Modal candidature ────────────────────────────────────────────────────────
+
+const ACADEMIC_LEVELS = [
+  'Baccalauréat',
+  'Bac +1',
+  'Bac +2 / BTS / DUT',
+  'Licence / Bac +3',
+  'Master / Bac +5',
+  'Doctorat',
+  'Autre',
+];
+
+const CandidatureModal = ({ competition, user, onClose }) => {
+  const [form, setForm] = useState({
+    academic_level: '',
+    birth_date: '',
+  });
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState(null);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+    try {
+      await submitAdmission({
+        first_name: user.first_name,
+        last_name: user.last_name,
+        email: user.email,
+        phone: user.phone || '',
+        academic_level: form.academic_level,
+        birth_date: form.birth_date || undefined,
+      });
+      setSuccess(true);
+    } catch (err) {
+      const msg = err.response?.data;
+      setError(typeof msg === 'string' ? msg : 'Une erreur est survenue. Veuillez réessayer.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+      <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden">
+
+        {/* En-tête */}
+        <div className="bg-blue-950 px-6 py-5 text-white">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-amber-300 mb-1">Candidature</p>
+              <h3 className="font-black leading-snug">{competition.title}</h3>
+              <p className="text-xs text-blue-300 mt-1">Clôture : {fmtDate(competition.application_deadline)}</p>
+            </div>
+            <button
+              onClick={onClose}
+              className="p-1.5 rounded-xl hover:bg-white/10 transition-colors shrink-0"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div className="p-6">
+          {success ? (
+            <div className="text-center py-4 space-y-3">
+              <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto">
+                <svg className="w-7 h-7 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <p className="font-black text-slate-900">Candidature envoyée !</p>
+              <p className="text-sm text-slate-500">Votre dossier a bien été transmis. Vous recevrez une réponse par email.</p>
+              <button
+                onClick={onClose}
+                className="mt-2 w-full py-2.5 bg-blue-950 hover:bg-blue-900 text-white text-sm font-bold rounded-xl transition-colors"
+              >
+                Fermer
+              </button>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Infos pré-remplies */}
+              <div className="bg-slate-50 rounded-2xl p-4 space-y-2">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-3">Vos informations</p>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <div>
+                    <p className="text-[10px] text-slate-400 font-semibold">Prénom</p>
+                    <p className="font-bold text-slate-800">{user.first_name}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-slate-400 font-semibold">Nom</p>
+                    <p className="font-bold text-slate-800">{user.last_name}</p>
+                  </div>
+                  <div className="col-span-2">
+                    <p className="text-[10px] text-slate-400 font-semibold">Email</p>
+                    <p className="font-bold text-slate-800 truncate">{user.email}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Niveau académique */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-700">
+                  Niveau académique actuel <span className="text-red-500">*</span>
+                </label>
+                <select
+                  required
+                  value={form.academic_level}
+                  onChange={(e) => setForm((f) => ({ ...f, academic_level: e.target.value }))}
+                  className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-900/20 focus:border-blue-900"
+                >
+                  <option value="">Sélectionner...</option>
+                  {ACADEMIC_LEVELS.map((l) => (
+                    <option key={l} value={l}>{l}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Date de naissance */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-700">Date de naissance</label>
+                <input
+                  type="date"
+                  value={form.birth_date}
+                  onChange={(e) => setForm((f) => ({ ...f, birth_date: e.target.value }))}
+                  className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-900/20 focus:border-blue-900"
+                />
+              </div>
+
+              {error && (
+                <div className="flex items-start gap-2 p-3 bg-red-50 border border-red-200 rounded-xl text-xs text-red-700">
+                  <svg className="w-4 h-4 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <p>{error}</p>
+                </div>
+              )}
+
+              <div className="flex gap-3 pt-1">
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="flex-1 py-2.5 border border-slate-200 text-slate-600 text-sm font-bold rounded-xl hover:bg-slate-50 transition-colors"
+                >
+                  Annuler
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="flex-1 py-2.5 bg-blue-950 hover:bg-blue-900 disabled:opacity-60 text-white text-sm font-bold rounded-xl transition-colors flex items-center justify-center gap-2"
+                >
+                  {loading && <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
+                  {loading ? 'Envoi...' : 'Envoyer'}
+                </button>
+              </div>
+            </form>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // ─── Onglet Concours ouverts ──────────────────────────────────────────────────
 
-const ConcoursTab = () => {
-  // TODO: remplacer par GET /api/events/competitions/
-  const competitions = MOCK_COMPETITIONS;
+const ConcoursTab = ({ competitions, loading, error }) => {
+  const { user } = useUserStore();
+  const [selectedCompetition, setSelectedCompetition] = useState(null);
 
   return (
     <div className="space-y-4 max-w-2xl">
       <div>
         <h2 className="text-base font-black text-slate-900">Concours ouverts</h2>
-        <p className="text-xs text-slate-400 mt-0.5">{competitions.length} concours disponible{competitions.length !== 1 ? 's' : ''}</p>
+        {!loading && !error && (
+          <p className="text-xs text-slate-400 mt-0.5">{competitions.length} concours disponible{competitions.length !== 1 ? 's' : ''}</p>
+        )}
       </div>
 
-      {competitions.length === 0 ? (
+      {loading && (
+        <div className="flex items-center justify-center py-16">
+          <span className="w-8 h-8 border-2 border-blue-900/20 border-t-blue-900 rounded-full animate-spin" />
+        </div>
+      )}
+
+      {error && (
+        <div className="flex items-start gap-2 p-4 bg-red-50 border border-red-200 rounded-2xl text-sm text-red-700">
+          <svg className="w-4 h-4 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <p>Impossible de charger les concours. Veuillez réessayer.</p>
+        </div>
+      )}
+
+      {!loading && !error && competitions.length === 0 ? (
         <div className="bg-white rounded-2xl border border-dashed border-slate-300 p-12 text-center">
           <svg className="w-10 h-10 text-slate-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138z" />
@@ -178,7 +323,7 @@ const ConcoursTab = () => {
           <p className="text-sm font-semibold text-slate-400">Aucun concours ouvert pour le moment.</p>
           <p className="text-xs text-slate-400 mt-1">Activez les alertes pour être notifié à l'ouverture du prochain concours.</p>
         </div>
-      ) : (
+      ) : !loading && !error && (
         <div className="space-y-3">
           {competitions.map((c) => {
             const daysLeft = daysUntil(c.application_deadline);
@@ -211,8 +356,10 @@ const ConcoursTab = () => {
                   </div>
                 </div>
 
-                {/* TODO: brancher sur POST /api/interactions/admission/ */}
-                <button className="w-full py-2.5 bg-blue-950 hover:bg-blue-900 text-white text-sm font-bold rounded-xl transition-colors">
+                <button
+                  onClick={() => setSelectedCompetition(c)}
+                  className="w-full py-2.5 bg-blue-950 hover:bg-blue-900 text-white text-sm font-bold rounded-xl transition-colors"
+                >
                   Soumettre ma candidature
                 </button>
               </div>
@@ -220,33 +367,55 @@ const ConcoursTab = () => {
           })}
         </div>
       )}
+
+      {selectedCompetition && user && (
+        <CandidatureModal
+          competition={selectedCompetition}
+          user={user}
+          onClose={() => setSelectedCompetition(null)}
+        />
+      )}
     </div>
   );
 };
 
 // ─── Onglet Mes candidatures ──────────────────────────────────────────────────
 
-const CandidaturesTab = () => {
-  // TODO: remplacer par GET /api/interactions/admissions/me/  (endpoint manquant)
-  const candidatures = MOCK_CANDIDATURES;
-
+const CandidaturesTab = ({ admissions, loading, error }) => {
   return (
     <div className="space-y-4 max-w-2xl">
       <div>
         <h2 className="text-base font-black text-slate-900">Mes candidatures</h2>
-        <p className="text-xs text-slate-400 mt-0.5">{candidatures.length} candidature{candidatures.length !== 1 ? 's' : ''} au total</p>
+        {!loading && !error && (
+          <p className="text-xs text-slate-400 mt-0.5">{admissions.length} candidature{admissions.length !== 1 ? 's' : ''} au total</p>
+        )}
       </div>
 
-      {candidatures.length === 0 ? (
+      {loading && (
+        <div className="flex items-center justify-center py-16">
+          <span className="w-8 h-8 border-2 border-blue-900/20 border-t-blue-900 rounded-full animate-spin" />
+        </div>
+      )}
+
+      {error && (
+        <div className="flex items-start gap-2 p-4 bg-red-50 border border-red-200 rounded-2xl text-sm text-red-700">
+          <svg className="w-4 h-4 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <p>Impossible de charger vos candidatures. Veuillez réessayer.</p>
+        </div>
+      )}
+
+      {!loading && !error && admissions.length === 0 ? (
         <div className="bg-white rounded-2xl border border-dashed border-slate-300 p-12 text-center">
           <svg className="w-10 h-10 text-slate-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
           </svg>
           <p className="text-sm font-semibold text-slate-400">Vous n'avez pas encore soumis de candidature.</p>
         </div>
-      ) : (
+      ) : !loading && !error && (
         <div className="space-y-3">
-          {candidatures.map((c) => {
+          {admissions.map((c) => {
             const s = STATUS_CONFIG[c.status] || STATUS_CONFIG.new;
             return (
               <div key={c.id} className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
@@ -299,30 +468,36 @@ const CandidaturesTab = () => {
         </div>
       )}
 
-      {/* Note sur l'état de l'API */}
-      <div className="flex items-start gap-2 p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-700">
-        <svg className="w-4 h-4 shrink-0 mt-0.5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        <p><span className="font-bold">Données fictives.</span> Cet onglet nécessite <code className="bg-amber-100 px-1 rounded">GET /api/interactions/admissions/me/</code> — endpoint à créer côté backend.</p>
-      </div>
     </div>
   );
 };
 
 // ─── Onglet Alertes ───────────────────────────────────────────────────────────
 
-const AlertesTab = () => {
-  // TODO: brancher sur GET /api/events/competitions/alert-status/ (endpoint manquant)
-  const [subscribed, setSubscribed] = useState(MOCK_ALERT_SUBSCRIBED);
+const AlertesTab = ({ subscribed, onSubscribe }) => {
+  const { user } = useUserStore();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleToggle = async () => {
     setLoading(true);
-    // TODO: POST /api/events/subscribe-competition-alert/ ou DELETE (endpoint manquant)
-    await new Promise(r => setTimeout(r, 800));
-    setSubscribed(s => !s);
-    setLoading(false);
+    setError(null);
+    try {
+      if (subscribed) {
+        await unsubscribeFromAlerts(user.email);
+        onSubscribe(false);
+      } else {
+        await subscribeToAlerts(user.email);
+        onSubscribe(true);
+      }
+    } catch {
+      setError(subscribed
+        ? 'Le désabonnement a échoué. Veuillez réessayer.'
+        : "L'abonnement a échoué. Veuillez réessayer."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -340,16 +515,21 @@ const AlertesTab = () => {
               Recevez un email dès qu'un nouveau concours est ouvert sur la plateforme ARSTM.
             </p>
           </div>
-          {/* Toggle */}
           <button
             onClick={handleToggle}
             disabled={loading}
             className={`relative shrink-0 w-12 h-6 rounded-full transition-colors duration-200 disabled:opacity-60
               ${subscribed ? 'bg-emerald-500' : 'bg-slate-300'}`}
           >
-            <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200
-              ${subscribed ? 'translate-x-6' : 'translate-x-0'}`}
-            />
+            {loading ? (
+              <span className="absolute inset-0 flex items-center justify-center">
+                <span className="w-3.5 h-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+              </span>
+            ) : (
+              <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200
+                ${subscribed ? 'translate-x-6' : 'translate-x-0'}`}
+              />
+            )}
           </button>
         </div>
 
@@ -362,17 +542,20 @@ const AlertesTab = () => {
             }
           </svg>
           {subscribed
-            ? `Alertes actives — notifications envoyées à ${/* user email placeholder */'votre adresse email'}`
-            : "Alertes désactivées — vous ne serez pas notifié"
+            ? `Alertes actives — notifications envoyées à ${user?.email}`
+            : 'Alertes désactivées — vous ne serez pas notifié'
           }
         </div>
-      </div>
 
-      <div className="flex items-start gap-2 p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-700">
-        <svg className="w-4 h-4 shrink-0 mt-0.5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        <p><span className="font-bold">Données fictives.</span> Nécessite <code className="bg-amber-100 px-1 rounded">GET /api/events/competitions/alert-status/</code> et <code className="bg-amber-100 px-1 rounded">DELETE /api/events/subscribe-competition-alert/</code>.</p>
+        {error && (
+          <div className="flex items-start gap-2 p-3 bg-red-50 border border-red-200 rounded-xl text-xs text-red-700">
+            <svg className="w-4 h-4 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p>{error}</p>
+          </div>
+        )}
+
       </div>
     </div>
   );
@@ -474,6 +657,29 @@ const ProfilTab = () => {
 const CandidatSpace = () => {
   const { user } = useUserStore();
   const [activeTab, setActiveTab] = useState('accueil');
+  const [competitions, setCompetitions] = useState([]);
+  const [competitionsLoading, setCompetitionsLoading] = useState(true);
+  const [competitionsError, setCompetitionsError] = useState(false);
+  const [admissions, setAdmissions] = useState([]);
+  const [admissionsLoading, setAdmissionsLoading] = useState(true);
+  const [admissionsError, setAdmissionsError] = useState(false);
+  const [subscribed, setSubscribed] = useState(false);
+
+  useEffect(() => {
+    fetchMyCompetitions()
+      .then((data) => setCompetitions(data))
+      .catch(() => setCompetitionsError(true))
+      .finally(() => setCompetitionsLoading(false));
+
+    fetchMyAdmissions()
+      .then((data) => setAdmissions(data))
+      .catch(() => setAdmissionsError(true))
+      .finally(() => setAdmissionsLoading(false));
+
+    getAlertStatus()
+      .then((data) => setSubscribed(data.subscribed ?? false))
+      .catch(() => {});
+  }, []);
 
   if (!user) return null;
 
@@ -513,10 +719,15 @@ const CandidatSpace = () => {
       </div>
 
       {/* Contenu */}
-      {activeTab === 'accueil'      && <AccueilTab onNavigate={setActiveTab} />}
-      {activeTab === 'concours'     && <ConcoursTab />}
-      {activeTab === 'candidatures' && <CandidaturesTab />}
-      {activeTab === 'alertes'      && <AlertesTab />}
+      {activeTab === 'accueil'      && <AccueilTab onNavigate={setActiveTab} competitions={competitions} admissions={admissions} subscribed={subscribed} />}
+      {activeTab === 'concours'     && <ConcoursTab competitions={competitions} loading={competitionsLoading} error={competitionsError} />}
+      {activeTab === 'candidatures' && <CandidaturesTab admissions={admissions} loading={admissionsLoading} error={admissionsError} />}
+      {activeTab === 'alertes'      && (
+        <AlertesTab
+          subscribed={subscribed}
+          onSubscribe={setSubscribed}
+        />
+      )}
     </div>
   );
 };

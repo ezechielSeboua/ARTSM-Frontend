@@ -8,17 +8,11 @@ import {
   CommonFields,
   SuccessBanner,
   ErrorBanner,
-  SecuriteTab,
 } from "./shared";
 
 // ─── Onglets ──────────────────────────────────────────────────────────────────
 
 const TABS = [
-  {
-    id: "profil",
-    label: "Mon profil",
-    icon: "M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z",
-  },
   {
     id: "ecole",
     label: "Mon école",
@@ -28,11 +22,6 @@ const TABS = [
     id: "formations",
     label: "Mes formations",
     icon: "M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253",
-  },
-  {
-    id: "securite",
-    label: "Sécurité",
-    icon: "M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z",
   },
 ];
 
@@ -513,7 +502,7 @@ const FormationsTab = ({ schoolId }) => {
 const EtudiantSpace = () => {
   const { user } = useUserStore();
   const { fetchSchools } = useSchoolStore();
-  const [activeTab, setActiveTab] = useState("profil");
+  const [activeTab, setActiveTab] = useState("ecole");
 
   useEffect(() => {
     fetchSchools();
@@ -570,10 +559,8 @@ const EtudiantSpace = () => {
       </div>
 
       {/* Contenu de l'onglet actif */}
-      {activeTab === "profil" && <ProfilTab />}
       {activeTab === "ecole" && <EcoleTab schoolId={schoolId} onGoToFormations={setActiveTab} />}
       {activeTab === "formations" && <FormationsTab schoolId={schoolId} />}
-      {activeTab === "securite" && <SecuriteTab />}
     </div>
   );
 };

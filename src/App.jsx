@@ -30,6 +30,7 @@ import ReferencesPage from "./pages/References/ReferencesPage";
 import UserSpaceLayout from "./pages/UserSpace/UserSpaceLayout";
 import UserSpaceHome from "./pages/UserSpace/UserSpaceHome";
 import SecuritePage from "./pages/UserSpace/SecuritePage";
+import ProfilPage from "./pages/UserSpace/ProfilPage";
 
 function App() {
   return (
@@ -87,6 +88,7 @@ function App() {
           }
         >
           <Route index element={<UserSpaceHome />} />
+          <Route path="profil" element={<ProfilPage />} />
           <Route path="securite" element={<SecuritePage />} />
         </Route>
 
